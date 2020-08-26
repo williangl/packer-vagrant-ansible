@@ -1,0 +1,1 @@
+Get-NetConnectionProfile | ForEach-Object { Set-NetConnectionProfile -InputObject $_ -NetworkCategory Private }
