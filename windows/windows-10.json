@@ -1,0 +1,52 @@
+{
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--vram", "48"],
+        ["modifyvm", "{{.Name}}", "--audio", "none"]
+      ],
+      "memory": 2048,
+      "cpus": 2,
+      "disk_size": 40960,
+      "guest_additions_mode": "disable",
+      "guest_os_type": "Windows10_64",
+      "hard_drive_interface": "sata",
+      "iso_interface": "sata",
+      "iso_checksum": "{{ user `iso_checksum` }}",
+      "iso_url": "{{ user `iso_url` }}",
+      "vm_name": "{{user `vm_name`}}",
+      "headless": false,
+      "communicator": "winrm",
+      "winrm_username": "vagrant",
+      "winrm_password": "vagrant",
+      "winrm_timeout": "3h",
+      "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c Packer_Shutdown",
+      "floppy_files": [
+        "{{ user `unattended_file_path` }}",
+        "scripts/test.ps1",
+        "scripts/winrm.ps1",
+        "scripts/network-category-private.ps1"
+    ],
+      "output_directory": "builds/",
+      "output_filename": "packer-{{user `os_type`}}",
+      "format":"ova"
+    }
+  ],
+  "provisioners": [
+    {
+        "type": "powershell",
+        "inline": [
+            "mkdir C:\\Users\\vagrant\\desktop\\willian"
+        ]
+    }
+  ],
+  "variables": {
+      "vm_name": "eval-win10x64-enterprise",
+      "iso_checksum": "3b5f9494d870726d6d8a833aaf6169a964b8a9be",
+      "iso_url": "http://care.dlservice.microsoft.com/dl/download/6/5/D/65D18931-F626-4A35-AD5B-F5DA41FE6B76/16299.15.170928-1534.rs3_release_CLIENTENTERPRISEEVAL_OEMRET_x64FRE_en-us.iso",
+      "build_directory": "builds/",
+      "unattended_file_path": "{{template_dir}}/answer_files/Autounattend.xml",
+      "scripts": "{{template_dir}}/scripts"
+  }
+}
